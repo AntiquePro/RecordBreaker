@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Bakalaura darba lietotne</string>
+    <string name="choose_exercise">Izvēlieties\nvingrinājumu</string>
+    <string name="steps_pushup">
+        1. Novietojiet ķermeni četrrāpus, liekot rokas nedaudz platāk par pleciem\n
+        2. Iztaisnojiet rokas un kājas\n
+        3. Nolaidiet ķermeni līdz krūtis nedaudz pieskaras grīdai\n
+        4. Iztaisnojiet rokas spiežot ķermeni uz augšu\n
+        5. Atkārtojiet
+</string>
+</resources>
