@@ -14,7 +14,7 @@ data class Exercise(
     val currentRecord: Int? = 0,
     val timeCounter: Boolean = false,
     val video: String? = "" ,
-    val exerciseSteps: String = "",
+    val exerciseSteps: String? = "",
     val painterID: Int?
 ) {
 

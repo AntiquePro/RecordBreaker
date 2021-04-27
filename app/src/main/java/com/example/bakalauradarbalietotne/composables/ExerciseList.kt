@@ -9,7 +9,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import com.example.bakalauradarbalietotne.Exercise
 
-
 @Composable
 fun ExerciseList(navController: NavController) {
     val scrollState = rememberScrollState()
@@ -19,17 +18,17 @@ fun ExerciseList(navController: NavController) {
         ExerciseCard(
             Exercise.exerciseSquat
         ) {
-            navController.navigate("exercise_info_screen")
+            navController.navigate("exercise_info_screen/squat")
         }
         ExerciseCard(
             Exercise.exercisePushUp
         ) {
-            navController.navigate("exercise_info_screen")
+            navController.navigate("exercise_info_screen/pushup")
         }
         ExerciseCard(
             Exercise.exercisePlank
         ) {
-            navController.navigate("exercise_info_screen")
+            navController.navigate("exercise_info_screen/plank")
         }
     }
 }

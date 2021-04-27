@@ -60,11 +60,9 @@ fun ExerciseCard(
                     contentAlignment = Alignment.Center,
                 ) {
                     Image(
-                        //painter = painter,
                         painter = painterResource(id = exercise.painterID!!),
                         contentDescription = null,
                         modifier = Modifier.padding(5.dp),
-                        //alignment = Alignment.Center
                     )
                 }
                 Column(
@@ -83,7 +81,7 @@ fun ExerciseCard(
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(
-                        text = "Patreizējs rekords:\n " +
+                        text = "Pašreizējs rekords:\n " +
                                 when {
                                     exercise.currentRecord == null -> "Nav uzstādīts"
                                     exercise.timeCounter -> "${exercise.currentRecord} sekundes"
