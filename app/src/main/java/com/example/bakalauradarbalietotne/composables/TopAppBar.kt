@@ -10,15 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.bakalauradarbalietotne.Exercises
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
 
 
-
 @Composable
-fun CustomTopAppBar(navController: NavController, exercise: String) {
+fun CustomTopAppBar(navController: NavController, exerciseID: String) {
     TopAppBar(
         title = {
-            Text(exercise)
+            Text(Exercises.getExerciseByID(exerciseID)?.title ?: "unknown exercise")
         },
         navigationIcon = {
             IconButton(
@@ -32,3 +32,4 @@ fun CustomTopAppBar(navController: NavController, exercise: String) {
         elevation = 12.dp
     )
 }
+

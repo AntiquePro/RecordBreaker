@@ -3,17 +3,12 @@ package com.example.bakalauradarbalietotne
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -21,10 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.example.bakalauradarbalietotne.composables.CustomTopAppBar
-import com.example.bakalauradarbalietotne.composables.ExerciseList
-import com.example.bakalauradarbalietotne.composables.MainMenuTooblar
-import com.example.bakalauradarbalietotne.composables.VideoPlayer
+import com.example.bakalauradarbalietotne.composables.*
 
 
 class MainActivity : ComponentActivity() {
@@ -37,20 +29,18 @@ class MainActivity : ComponentActivity() {
                 navController = navController,
                 startDestination = "exercise_choice_screen"
             ) {
-                composable("exercise_choice_screen") {
+                composable(route = "exercise_choice_screen") {
                     ExerciseChoiceScreen(navController)
                 }
                 composable(
-                    route = "exercise_info_screen/{exercise}",
+                    route = "exercise_info_screen/{exerciseID}",
                     arguments = listOf(
-                        navArgument("exercise") {
+                        navArgument("exerciseID") {
                             type = NavType.StringType
                         }
                     )) {
-                    val exercise = remember {
-                        it.arguments?.getString("exercise")
-                    }
-                    ExerciseInfoScreen(navController, exercise ?: "Undefined exercise")
+                    val exerciseID = it.arguments?.getString("exerciseID") ?: "Error"
+                    ExerciseInfoScreen(navController, exerciseID)
                 }
             }
         }
@@ -66,7 +56,11 @@ fun ExerciseChoiceScreen(navController: NavController) {
 }
 
 @Composable
-fun ExerciseInfoScreen(navController: NavController, exercise: String) {
-    CustomTopAppBar(navController, exercise)
-    VideoPlayer()
+fun ExerciseInfoScreen(navController: NavController, exerciseID: String) {
+    Column {
+        CustomTopAppBar(navController, exerciseID)
+        VideoPlayer()
+        ExerciseInfo(exerciseID)
+    }
 }
+
