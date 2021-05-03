@@ -1,8 +1,5 @@
 package com.example.bakalauradarbalietotne
 
-import androidx.compose.ui.res.stringResource
-import com.example.bakalauradarbalietotne.utils.ExerciseStrings
-
 object Exercises {
 
     fun getExerciseByID(exerciseID: String): Exercise? {
@@ -18,7 +15,7 @@ object Exercises {
         title = "Atspiešanās",
         currentRecord = null,
         timeCounter = false,
-        video = "",
+        video = null,
         exerciseSteps = R.string.steps_pushup,
         painterID = R.drawable.image_stickman_pushups
     )
@@ -27,7 +24,7 @@ object Exercises {
         title = "Pietupieni",
         currentRecord = 30,
         timeCounter = false,
-        video = "",
+        video = null,
         exerciseSteps = R.string.steps_squats,
         painterID = R.drawable.image_stickman_squats
     )
@@ -36,7 +33,7 @@ object Exercises {
         title = "Planka",
         currentRecord = 50,
         timeCounter = true,
-        video = "",
+        video = null,
         exerciseSteps = R.string.steps_plank,
         painterID = R.drawable.image_stickman_plank
     )

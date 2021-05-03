@@ -17,7 +17,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
 @Composable
-fun VideoPlayer() {
+fun VideoPlayer(exerciseID: String) {
     val context = LocalContext.current
 
     // Do not recreate the player everytime this Composable commits

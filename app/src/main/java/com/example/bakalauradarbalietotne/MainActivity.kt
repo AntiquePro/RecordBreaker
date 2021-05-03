@@ -59,8 +59,9 @@ fun ExerciseChoiceScreen(navController: NavController) {
 fun ExerciseInfoScreen(navController: NavController, exerciseID: String) {
     Column {
         CustomTopAppBar(navController, exerciseID)
-        VideoPlayer()
+        VideoPlayer(exerciseID)
         ExerciseInfo(exerciseID)
+        FloatingStartButtons(exerciseID)
     }
 }
 
