@@ -42,12 +42,12 @@ fun VideoPlayer(exerciseID: String) {
 
     // create AndroidView for exoPlayer to fit in this view on screen
     AndroidView(
+        modifier = Modifier.height(200.dp).fillMaxWidth(),
         factory = { ctx ->
             PlayerView(ctx).apply {
                 player = exoPlayer
             }
-        },
-        modifier = Modifier.height(200.dp).fillMaxWidth()
+        }
     )
 }
 

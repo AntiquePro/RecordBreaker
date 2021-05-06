@@ -20,6 +20,7 @@ fun CameraPreview() {
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
     AndroidView(
+        modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
             val previewView = PreviewView(ctx)
             val executor = ContextCompat.getMainExecutor(ctx)
@@ -28,7 +29,6 @@ fun CameraPreview() {
                 val preview = Preview.Builder().build().also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
-
                 val cameraSelector = CameraSelector.Builder()
                     .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
                     .build()
@@ -40,9 +40,7 @@ fun CameraPreview() {
                     preview
                 )
             }, executor)
-
             previewView
-        },
-        modifier = Modifier.fillMaxSize(),
+        }
     )
 }
