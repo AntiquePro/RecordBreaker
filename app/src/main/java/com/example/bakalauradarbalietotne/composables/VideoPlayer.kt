@@ -42,8 +42,8 @@ fun VideoPlayer(exerciseID: String) {
 
     // create AndroidView for exoPlayer to fit in this view on screen
     AndroidView(
-        factory = { context ->
-            PlayerView(context).apply {
+        factory = { ctx ->
+            PlayerView(ctx).apply {
                 player = exoPlayer
             }
         },

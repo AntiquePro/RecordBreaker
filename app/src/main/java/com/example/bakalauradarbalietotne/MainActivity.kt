@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -57,7 +58,7 @@ fun ExerciseChoiceScreen(navController: NavController) {
 
 @Composable
 fun ExerciseInfoScreen(navController: NavController, exerciseID: String) {
-    Column {
+    Column(Modifier.fillMaxSize()) {
         CustomTopAppBar(navController, exerciseID)
         VideoPlayer(exerciseID)
         ExerciseInfo(exerciseID)

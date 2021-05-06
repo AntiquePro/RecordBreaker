@@ -1,6 +1,11 @@
 package com.example.bakalauradarbalietotne.composables
 
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,14 +14,18 @@ import androidx.compose.material.*
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContextCompat
+import com.example.bakalauradarbalietotne.ExerciseActivity
 import com.example.bakalauradarbalietotne.R
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
 
 @Composable
 fun FloatingStartButtons(exerciseID: String) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .padding(5.dp, 15.dp)
@@ -34,7 +43,9 @@ fun FloatingStartButtons(exerciseID: String) {
                     ""
                 )
             },
-            onClick = { }
+            onClick = {
+                checkCameraPermissions(context)
+            }
         )
 
         ExtendedFloatingActionButton(
@@ -47,7 +58,28 @@ fun FloatingStartButtons(exerciseID: String) {
                     ), ""
                 )
             },
-            onClick = { }
+            onClick = {
+                checkCameraPermissions(context)
+            }
+        )
+    }
+}
+
+fun checkCameraPermissions(context: Context) {
+    // Permission is granted
+    if (
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
+        context.startActivity(Intent(context, ExerciseActivity::class.java))
+    }
+    // Permission is not granted
+    else {
+        requestPermissions(
+            context as Activity, arrayOf(Manifest.permission.CAMERA
+            ), 1
         )
     }
 }
