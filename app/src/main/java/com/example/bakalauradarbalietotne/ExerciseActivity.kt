@@ -12,6 +12,9 @@ class ExerciseActivity : ComponentActivity() {
         setContent {
             CameraPreview()
             ExerciseInterface()
+            /*val a = DigitalSkeleton()
+            a.drawDigitalSkeleton()*/
         }
     }
 }
+
