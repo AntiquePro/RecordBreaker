@@ -49,7 +49,7 @@ class DigitalSkeleton () {
         val rightHeel = pose.getPoseLandmark(PoseLandmark.RIGHT_HEEL)
         val leftFootIndex = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX)
         val rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX)
-
+//
         for (landmark in landmarks) {
             DrawCanvasPoint(landmark)
         }
