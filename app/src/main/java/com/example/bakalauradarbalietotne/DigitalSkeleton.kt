@@ -1,24 +1,40 @@
 package com.example.bakalauradarbalietotne
 
-
+import android.content.res.Configuration
 import android.util.Log
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
+import com.google.android.gms.internal.mlkit_vision_mediapipe.zzdw
+import com.google.mlkit.vision.mediapipe.pose.PoseHolder
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
+import kotlin.properties.Delegates
 
-class DigitalSkeleton () {
+class DigitalSkeleton {
+
+    companion object {
+        private var pose: Pose? = null
+        var currentPose by mutableStateOf(pose)
+        var currentCameraPreview by Delegates.notNull<PreviewView>()
+        const val ML_KIT_IMAGE_DEFAULT_WIDTH = 480
+        const val ML_KIT_IMAGE_DEFAULT_HEIGHT = 640
+    }
 
     @Composable
-    fun drawDigitalSkeleton(pose: Pose) {
-
+    fun DrawDigitalSkeleton(pose: Pose) {
         val landmarks = pose.allPoseLandmarks
 
         if (landmarks.isEmpty()) {
@@ -26,47 +42,167 @@ class DigitalSkeleton () {
             return
         }
 
-        val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
-        val rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
-        val leftElbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
-        val rightElbow = pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
-        val leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
-        val rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
-        val leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP)
-        val rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)
-        val leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)
-        val rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)
-        val leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
-        val rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
+        val leftShoulderLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
+        val rightShoulderLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
+        val leftElbowLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
+        val rightElbowLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
+        val leftWristLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
+        val rightWristLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
+        val leftHipLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_HIP)
+        val rightHipLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)
+        val leftKneeLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE)
+        val rightKneeLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE)
+        val leftAnkleLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE)
+        val rightAnkleLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
+        val leftPinkyLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_PINKY)
+        val rightPinkyLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_PINKY)
+        val leftIndexLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_INDEX)
+        val rightIndexLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_INDEX)
+        val leftThumbLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_THUMB)
+        val rightThumbLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_THUMB)
+        val leftHeelLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_HEEL)
+        val rightHeelLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_HEEL)
+        val leftFootIndexLandmark = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX)
+        val rightFootIndexLandmark = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX)
 
-        val leftPinky = pose.getPoseLandmark(PoseLandmark.LEFT_PINKY)
-        val rightPinky = pose.getPoseLandmark(PoseLandmark.RIGHT_PINKY)
-        val leftIndex = pose.getPoseLandmark(PoseLandmark.LEFT_INDEX)
-        val rightIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_INDEX)
-        val leftThumb = pose.getPoseLandmark(PoseLandmark.LEFT_THUMB)
-        val rightThumb = pose.getPoseLandmark(PoseLandmark.RIGHT_THUMB)
-        val leftHeel = pose.getPoseLandmark(PoseLandmark.LEFT_HEEL)
-        val rightHeel = pose.getPoseLandmark(PoseLandmark.RIGHT_HEEL)
-        val leftFootIndex = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX)
-        val rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX)
-//
+        // Draw lines
+        DrawCanvasLine(leftShoulderLandmark, rightShoulderLandmark)
+        DrawCanvasLine(leftHipLandmark, rightHipLandmark)
+        DrawCanvasLine(leftShoulderLandmark, leftElbowLandmark)
+        DrawCanvasLine(leftElbowLandmark, leftWristLandmark)
+        DrawCanvasLine(leftShoulderLandmark, leftHipLandmark)
+        DrawCanvasLine(leftHipLandmark, leftKneeLandmark)
+        DrawCanvasLine(leftKneeLandmark, leftAnkleLandmark)
+        DrawCanvasLine(leftWristLandmark, leftThumbLandmark)
+        DrawCanvasLine(leftWristLandmark, leftPinkyLandmark)
+        DrawCanvasLine(leftWristLandmark, leftIndexLandmark)
+        DrawCanvasLine(leftIndexLandmark, leftPinkyLandmark)
+        DrawCanvasLine(leftAnkleLandmark, leftHeelLandmark)
+        DrawCanvasLine(leftHeelLandmark, leftFootIndexLandmark)
+        DrawCanvasLine(rightShoulderLandmark, rightElbowLandmark)
+        DrawCanvasLine(rightElbowLandmark, rightWristLandmark)
+        DrawCanvasLine(rightShoulderLandmark, rightHipLandmark)
+        DrawCanvasLine(rightHipLandmark, rightKneeLandmark)
+        DrawCanvasLine(rightKneeLandmark, rightAnkleLandmark)
+        DrawCanvasLine(rightWristLandmark, rightThumbLandmark)
+        DrawCanvasLine(rightWristLandmark, rightPinkyLandmark)
+        DrawCanvasLine(rightWristLandmark, rightIndexLandmark)
+        DrawCanvasLine(rightIndexLandmark, rightPinkyLandmark)
+        DrawCanvasLine(rightAnkleLandmark, rightHeelLandmark)
+        DrawCanvasLine(rightHeelLandmark, rightFootIndexLandmark)
+
+        // Draw points
         for (landmark in landmarks) {
             DrawCanvasPoint(landmark)
         }
     }
 
     @Composable
-    fun DrawCanvasPoint(landmark: PoseLandmark) {
+    private fun DrawCanvasPoint(landmark: PoseLandmark) {
         val point = landmark.position
-
-        Canvas(Modifier.fillMaxSize()) {
+        val configuration = LocalConfiguration.current
+        Canvas(
+            Modifier
+                .fillMaxSize()
+                .scale(
+                    scaleX = adjustScaleX(checkIfDeviceIsRotated(configuration)),
+                    scaleY = adjustScaleY(checkIfDeviceIsRotated(configuration))
+                )
+        ) {
             drawCircle(
-                color = Color.White,
-                center = Offset(point.x, point.y),
+                color = OrangeMain,
+                center = adjustCoordinates(point.x, point.y, checkIfDeviceIsRotated(configuration)),
                 radius = 8f
             )
         }
-
     }
+
+    @Composable
+    private fun DrawCanvasLine(startLandmark: PoseLandmark, endLandmark: PoseLandmark) {
+        val startPoint = startLandmark.position
+        val endPoint = endLandmark.position
+        val configuration = LocalConfiguration.current
+        Canvas(
+            Modifier.fillMaxSize()
+                .scale(
+                    scaleX = adjustScaleX(checkIfDeviceIsRotated(configuration)),
+                    scaleY = adjustScaleY(checkIfDeviceIsRotated(configuration))
+                )
+        ) {
+            drawLine(
+                color = Color.White,
+                start = adjustCoordinates(startPoint.x, startPoint.y, checkIfDeviceIsRotated(configuration)),
+                end = adjustCoordinates(endPoint.x, endPoint.y, checkIfDeviceIsRotated(configuration)),
+                strokeWidth = 8f
+            )
+        }
+    }
+
+    private fun adjustCoordinates(x: Float, y: Float, isRotated: Boolean): Offset {
+        // If device is not rotated (portrait mode)
+        return if (!isRotated) {
+            Offset(
+                x * currentCameraPreview.width / ML_KIT_IMAGE_DEFAULT_WIDTH,
+                y * currentCameraPreview.height / ML_KIT_IMAGE_DEFAULT_HEIGHT
+            )
+        }
+        // If device is rotated (landscape mode)
+        else {
+            Offset(
+                x * currentCameraPreview.width / ML_KIT_IMAGE_DEFAULT_HEIGHT,
+                y * currentCameraPreview.height / ML_KIT_IMAGE_DEFAULT_WIDTH
+            )
+        }
+    }
+
+    private fun checkIfDeviceIsRotated(configuration: Configuration): Boolean {
+        return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    }
+
+    private fun adjustScaleX(isRotated: Boolean): Float {
+        // If device is not rotated (portrait mode)
+        return if (!isRotated) -scaleFormula(false)
+        // If device is rotated (landscape mode)
+        else -1f
+    }
+
+    private fun adjustScaleY(isRotated: Boolean): Float {
+        // If device is not rotated (portrait mode)
+        return if (!isRotated) 1f
+        // If device is rotated (landscape mode)
+        else scaleFormula(true)
+    }
+
+    //-1.5f
+    //1.67f//2f
+
+    private fun scaleFormula(isRotated: Boolean): Float {
+        // If device is not rotated (portrait mode)
+        return if (!isRotated) (
+                currentCameraPreview.height.toFloat() / currentCameraPreview.width.toFloat()) / (ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat()
+                )
+        // If device is rotated (landscape mode)
+        else (
+                currentCameraPreview.width.toFloat() / currentCameraPreview.height.toFloat()) / (ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat()
+                )
+    }
+
+    // pielikt to translate coordinate funkciju arī drawLine. Tad notestēt, ar lenovo gan jau būs sveists. Bet tālāk ar to scale dabūt arī.
 }
 
+/*        Log.d(
+            "Scales",
+            "camerapreview: ${(currentCameraPreview.height / currentCameraPreview.width).toFloat()}"
+        )
+        Log.d(
+            "Scales",
+            "rotated: ${scaleFormula(true)}"
+        )
+        Log.d(
+            "Scales",
+            "note rotated: ${scaleFormula(false)}"
+        )
+        Log.d(
+            "Scales",
+            "mlkit: ${ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat()}"
+        )*/

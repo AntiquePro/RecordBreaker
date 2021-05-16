@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Camera
 import android.graphics.Canvas
 import android.util.Log
+import android.util.Size
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
@@ -18,6 +19,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.activity.viewModels
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -28,15 +31,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.bakalauradarbalietotne.DigitalSkeleton
+import com.example.bakalauradarbalietotne.PoseViewModel
 import com.example.bakalauradarbalietotne.R
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
 import com.google.mlkit.vision.pose.PoseLandmark
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 @SuppressLint("UnsafeOptInUsageError")
 @Composable
@@ -56,6 +58,7 @@ fun CameraPreview() {
         modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
             val previewView = PreviewView(ctx)
+            DigitalSkeleton.currentCameraPreview = previewView
             val executor = ContextCompat.getMainExecutor(ctx)
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
@@ -67,64 +70,30 @@ fun CameraPreview() {
                     .build()
 
                 val imageAnalysis = ImageAnalysis.Builder()
-// Block producer gaida kad kadra analīze beigsies un tad analizē nākamo kadru, keep only latest - atmet tos kadrus
-// kas ilgi lādējas lkm
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
 
                 imageAnalysis.setAnalyzer(executor, ImageAnalysis.Analyzer { image ->
-
-
                     val rotationDegrees = image.imageInfo.rotationDegrees
-                    Log.d("IMAGE_ANALYSIS", "Preview rotation degree is $rotationDegrees")
-
-                    val mediaImage = InputImage.fromMediaImage(image.image!!, rotationDegrees)
-
-
-                    poseDetector.process(mediaImage)
+                    val inputImage = InputImage.fromMediaImage(image.image!!, rotationDegrees)
+                    poseDetector.process(inputImage)
                         .addOnSuccessListener { pose ->
                             image.close()
-                            Log.d("PoseDetection", "Successful detection $pose")
-                            pose.getPoseLandmark(PoseLandmark.LEFT_EAR)?.let {
-                                Log.d("PoseDetection", "Left ear: ${it.position3D}")
-                            }
-
-                            val myBitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
-                            val myCanvas = Canvas(myBitmap)
-                            myCanvas.drawARGB(0, 255, 255, 255)
-
-                            AndroidView(
-                                modifier = Modifier.fillMaxSize(),
-                                factory = {
-                                    ComposeView(it).apply {
-                                        Text("d")
-                                    }
-                                }
+                            DigitalSkeleton.currentPose = pose
+                            Log.d(
+                                "ImageInfo",
+                                "Preview view width: ${previewView.width}, preview view height: ${previewView.height}"
                             )
-                            //myCanvas
-
-
-                            //val sentCanvas = sendPose(pose)
-                            //sentCanvas
-
-
-                            //Text("test")
-
-//                            for (landmark in pose.allPoseLandmarks) {
-//                                Canvas(Modifier.wrapContentSize()) {
-//                                    drawCircle(
-//                                        color = Color.White,
-//                                        center = Offset(landmark.position.x, landmark.position.y),
-//                                        radius = 8f
-//                                    )
-//                                }
-//                            }
+                            Log.d(
+                                "ImageInfo",
+                                "Image width: ${image.height}, image height: ${image.width}"
+                            )
+                            Log.d("PoseDetection", "Successful detection $pose")
                         }.addOnFailureListener { e ->
                             Log.d("PoseDetection", "Failed detection: $e")
                         }
                 }
                 )
-
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
@@ -136,8 +105,12 @@ fun CameraPreview() {
             previewView
         }
     )
-
 }
+
+
+//                            pose.getPoseLandmark(PoseLandmark.LEFT_EAR)?.let {
+//                                Log.d("PoseDetection", "Left ear: ${it.position3D}")
+//                            }
 
 //fun sendPose(pose: Pose): androidx.compose.ui.graphics.Canvas {
 //    return androidx.compose.ui.graphics.Canvas(Canvas(BitmapFactory.decodeResource( R.drawable.image_stickman_squats)))
