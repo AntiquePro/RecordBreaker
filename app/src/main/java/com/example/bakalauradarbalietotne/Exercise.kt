@@ -4,7 +4,6 @@ data class Exercise(
     val title: String,
     val currentRecord: Int? = 0,
     val timeCounter: Boolean = false,
-    val video: Int?,
     val exerciseSteps: Int?,
     val painterID: Int?
 )

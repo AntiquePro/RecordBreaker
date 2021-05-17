@@ -68,7 +68,6 @@ fun ExerciseInfoScreen(navController: NavController, exerciseID: String) {
             ExerciseInfo(exerciseID)
             FloatingStartButtons(exerciseID)
         }
-
     }
 }
 

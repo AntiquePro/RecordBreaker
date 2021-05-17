@@ -15,7 +15,6 @@ object Exercises {
         title = "Atspiešanās",
         currentRecord = null,
         timeCounter = false,
-        video = null,
         exerciseSteps = R.string.steps_pushup,
         painterID = R.drawable.image_stickman_pushups
     )
@@ -24,7 +23,6 @@ object Exercises {
         title = "Pietupieni",
         currentRecord = 30,
         timeCounter = false,
-        video = null,
         exerciseSteps = R.string.steps_squats,
         painterID = R.drawable.image_stickman_squats
     )
@@ -33,7 +31,6 @@ object Exercises {
         title = "Planka",
         currentRecord = 50,
         timeCounter = true,
-        video = null,
         exerciseSteps = R.string.steps_plank,
         painterID = R.drawable.image_stickman_plank
     )
