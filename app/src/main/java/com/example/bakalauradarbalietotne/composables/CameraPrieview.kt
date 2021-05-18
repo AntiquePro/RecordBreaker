@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.bakalauradarbalietotne.DigitalSkeleton
-import com.example.bakalauradarbalietotne.PoseViewModel
 import com.example.bakalauradarbalietotne.R
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.pose.Pose
@@ -55,7 +54,6 @@ fun CameraPreview() {
 
 
     AndroidView(
-        modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
             val previewView = PreviewView(ctx)
             DigitalSkeleton.currentCameraPreview = previewView
@@ -98,12 +96,13 @@ fun CameraPreview() {
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
                     cameraSelector,
+                    preview,
                     imageAnalysis,
-                    preview
                 )
             }, executor)
             previewView
-        }
+        },
+        modifier = Modifier.fillMaxSize()
     )
 }
 

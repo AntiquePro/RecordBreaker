@@ -74,4 +74,6 @@ dependencies {
 
     implementation 'com.google.mlkit:pose-detection-accurate:17.0.1-beta3'
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
+
 }
