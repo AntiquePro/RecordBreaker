@@ -29,6 +29,7 @@ fun ExerciseInfo(exerciseID: String) {
         Text(
             text = "Pašreizējs rekords: ${
                 when {
+                    exercise?.currentRecord == 0 -> " nav uzstādīts"
                     exercise?.currentRecord == null -> " nav uzstādīts"
                     exercise.timeCounter -> "${exercise.currentRecord} sekundes"
                     !exercise.timeCounter -> "${exercise.currentRecord} reizes"

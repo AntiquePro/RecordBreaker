@@ -1,11 +1,6 @@
 package com.example.bakalauradarbalietotne.composables
 
 import android.annotation.SuppressLint
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Camera
-import android.graphics.Canvas
 import android.util.Log
 import android.util.Size
 import androidx.camera.core.CameraSelector
@@ -13,31 +8,22 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.activity.viewModels
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.textInputServiceFactory
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.bakalauradarbalietotne.DigitalSkeleton
-import com.example.bakalauradarbalietotne.R
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
-import com.google.mlkit.vision.pose.PoseLandmark
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions
-
 
 @SuppressLint("UnsafeOptInUsageError")
 @Composable
@@ -45,6 +31,7 @@ fun CameraPreview() {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+    //val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
     val options = AccuratePoseDetectorOptions.Builder()
         .setDetectorMode(AccuratePoseDetectorOptions.STREAM_MODE)
@@ -52,8 +39,9 @@ fun CameraPreview() {
 
     val poseDetector = PoseDetection.getClient(options)
 
-
     AndroidView(
+        //modifier = Modifier.size(height, width).fillMaxHeight(),
+        //modifier = modifier,
         factory = { ctx ->
             val previewView = PreviewView(ctx)
             DigitalSkeleton.currentCameraPreview = previewView
@@ -78,14 +66,14 @@ fun CameraPreview() {
                         .addOnSuccessListener { pose ->
                             image.close()
                             DigitalSkeleton.currentPose = pose
-                            Log.d(
+/*                            Log.d(
                                 "ImageInfo",
                                 "Preview view width: ${previewView.width}, preview view height: ${previewView.height}"
                             )
                             Log.d(
                                 "ImageInfo",
                                 "Image width: ${image.height}, image height: ${image.width}"
-                            )
+                            )*/
                             Log.d("PoseDetection", "Successful detection $pose")
                         }.addOnFailureListener { e ->
                             Log.d("PoseDetection", "Failed detection: $e")

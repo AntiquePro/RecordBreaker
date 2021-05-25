@@ -71,7 +71,7 @@ fun ExerciseCard(
                     Text(
                         text = "Pašreizējs rekords:\n " +
                                 when {
-                                    exercise.currentRecord == null -> "Nav uzstādīts"
+                                    exercise.currentRecord == 0 -> "Nav uzstādīts"
                                     exercise.timeCounter -> "${exercise.currentRecord} sekundes"
                                     !exercise.timeCounter -> "${exercise.currentRecord} reizes"
                                     else -> ""

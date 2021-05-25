@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import com.example.bakalauradarbalietotne.ExerciseActivity
+import com.example.bakalauradarbalietotne.Exercises
 import com.example.bakalauradarbalietotne.R
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
 
@@ -32,6 +33,7 @@ fun FloatingStartButtons(exerciseID: String) {
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+        // new record button
         ExtendedFloatingActionButton(
             text = { Text("Jauns\nrekords") },
             backgroundColor = OrangeMain,
@@ -44,10 +46,12 @@ fun FloatingStartButtons(exerciseID: String) {
                 )
             },
             onClick = {
-                checkCameraPermissions(context)
+                checkCameraPermissions(context, exerciseID, 1)
             }
         )
 
+        // workout button
+        if (Exercises.getExerciseByID(exerciseID)?.currentRecord != 0)
         ExtendedFloatingActionButton(
             text = { Text("Veikt\ntreniņu") },
             backgroundColor = OrangeMain,
@@ -59,13 +63,13 @@ fun FloatingStartButtons(exerciseID: String) {
                 )
             },
             onClick = {
-                checkCameraPermissions(context)
+                checkCameraPermissions(context, exerciseID, 2)
             }
         )
     }
 }
 
-fun checkCameraPermissions(context: Context) {
+fun checkCameraPermissions(context: Context, exerciseID: String, workoutMode: Int) {
     // Permission is granted
     if (
         ContextCompat.checkSelfPermission(
@@ -73,12 +77,22 @@ fun checkCameraPermissions(context: Context) {
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     ) {
-        context.startActivity(Intent(context, ExerciseActivity::class.java))
+        context.startActivity(
+            Intent(context, ExerciseActivity::class.java)
+                .putExtra(
+                    "exerciseID",
+                    exerciseID
+                ).putExtra(
+                    "workoutMode",
+                    workoutMode
+                )
+        )
     }
     // Permission is not granted
     else {
         requestPermissions(
-            context as Activity, arrayOf(Manifest.permission.CAMERA
+            context as Activity, arrayOf(
+                Manifest.permission.CAMERA
             ), 1
         )
     }

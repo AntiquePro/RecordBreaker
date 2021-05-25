@@ -1,18 +1,15 @@
 package com.example.bakalauradarbalietotne
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -26,6 +23,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // set current records with sharedPreferences
+        Exercises.exerciseSquat.currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("squatRecord", 0)
+        Exercises.exercisePushUp.currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("pushupRecord", 0)
+        Exercises.exercisePlank.currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("plankRecord", 0)
+
+
         setContent {
             val navController = rememberNavController()
             NavHost(
@@ -47,8 +51,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+/*
+        sharedPreferences.edit().apply {
+            putInt("squatRecord", 5)
+            putInt("pushupRecord", 25)
+            putInt("plankRecord", 0)
+            apply()
+        }*/
     }
 }
+
 
 @Composable
 fun ExerciseChoiceScreen(navController: NavController) {
