@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
 
     <application
@@ -14,9 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BakalauraDarbaLietotne">
         <activity
+            android:name=".TutorialActivity"
+            android:exported="true"
+            android:label="@string/title_activity_tutorial"
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.BakalauraDarbaLietotne.NoActionBar" />
+        <activity
             android:name=".ExerciseActivity"
             android:exported="true"
             android:label="@string/title_activity_exercise"
+            android:screenOrientation="nosensor"
             android:theme="@style/Theme.BakalauraDarbaLietotne.NoActionBar" />
         <activity
             android:name=".MainActivity"

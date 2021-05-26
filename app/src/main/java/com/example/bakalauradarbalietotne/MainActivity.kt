@@ -20,14 +20,16 @@ import com.example.bakalauradarbalietotne.composables.*
 
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // set current records with sharedPreferences
-        Exercises.exerciseSquat.currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("squatRecord", 0)
-        Exercises.exercisePushUp.currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("pushupRecord", 0)
-        Exercises.exercisePlank.currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("plankRecord", 0)
+        Exercises.exerciseSquat.currentRecord =
+            getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("squatRecord", 0)
+        Exercises.exercisePushUp.currentRecord =
+            getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("pushupRecord", 0)
+        Exercises.exercisePlank.currentRecord =
+            getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("plankRecord", 0)
 
 
         setContent {

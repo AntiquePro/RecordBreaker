@@ -40,8 +40,6 @@ fun CameraPreview() {
     val poseDetector = PoseDetection.getClient(options)
 
     AndroidView(
-        //modifier = Modifier.size(height, width).fillMaxHeight(),
-        //modifier = modifier,
         factory = { ctx ->
             val previewView = PreviewView(ctx)
             DigitalSkeleton.currentCameraPreview = previewView

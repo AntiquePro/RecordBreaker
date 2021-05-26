@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.example.bakalauradarbalietotne.ExerciseActivity
 import com.example.bakalauradarbalietotne.Exercises
 import com.example.bakalauradarbalietotne.R
+import com.example.bakalauradarbalietotne.TutorialActivity
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
 
 @Composable
@@ -78,7 +79,7 @@ fun checkCameraPermissions(context: Context, exerciseID: String, workoutMode: In
         ) == PackageManager.PERMISSION_GRANTED
     ) {
         context.startActivity(
-            Intent(context, ExerciseActivity::class.java)
+            Intent(context, TutorialActivity::class.java)
                 .putExtra(
                     "exerciseID",
                     exerciseID

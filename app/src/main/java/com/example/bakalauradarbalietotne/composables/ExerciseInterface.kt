@@ -35,22 +35,6 @@ fun ExerciseInterface(mode: Int, exercise: String) {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            IconButton(
-                modifier = Modifier.then(Modifier.size(24.dp)),
-                onClick = {}
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_baseline_help_24),
-                    contentDescription = "",
-                    tint = Color.White
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
                 .fillMaxWidth()
                 .height(20.dp)
                 .padding(5.dp),

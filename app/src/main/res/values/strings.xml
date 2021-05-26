@@ -21,5 +21,6 @@
         3. Cenšaties noturēt pozīciju pēc iespējas ilgāk
 </string>
     <string name="title_activity_exercise">ExerciseActivity</string>
+    <string name="title_activity_tutorial">TutorialActivity</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.example.bakalauradarbalietotne
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -43,37 +44,19 @@ class ExerciseActivity : ComponentActivity() {
         val workoutMode = intent.getIntExtra("workoutMode", 0)
         var userReady = false
         lifecycleScope.launch {
-            while (!userReady) {
-                setContent {
-                    CameraPreview()
-                    DigitalSkeleton.currentPose?.let { currentPose ->
-                        DigitalSkeleton().DrawDigitalSkeleton(currentPose)
-                    }
-                    ExerciseInterface(workoutMode, exercise!!)
-                    PrepareWorkout { userReady = true }
+            setContent {
+                CameraPreview()
+                Text("${DigitalSkeleton.currentPose}")
+                DigitalSkeleton.currentPose?.let { currentPose ->
+                    DigitalSkeleton().DrawDigitalSkeleton(currentPose)
                 }
-                delay(1000L)
+                ExerciseInterface(workoutMode, exercise!!)
             }
-            if (userReady) {
-                setContent {
-                    CounterView()
-                }
-                startCounter().await()
-                //delay(3000L)
-                //this.async(Dispatchers.Default) {
-                setContent {
+            if (exercise == "pushup" || exercise == "plank") {
+                delay(100)
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            }
 
-                }
-                setContent {
-                    CameraPreview()
-                    Text("${DigitalSkeleton.currentPose}")
-                    DigitalSkeleton.currentPose?.let { currentPose ->
-                        DigitalSkeleton().DrawDigitalSkeleton(currentPose)
-                    }
-                    ExerciseInterface(workoutMode, exercise!!)
-                    //}
-                }
-            }
             //delay(3000L)
             tts = TextToSpeech(applicationContext, null)
             val workout = Workout(exercise!!, workoutMode, applicationContext, tts)
@@ -123,7 +106,7 @@ class ExerciseActivity : ComponentActivity() {
                             }
 
                             if (workoutMode == 1) {
-                                newRecord = 298
+                                newRecord = 5
                                 setFinished = true
                                 workoutInterface.workoutProcess = false
                             }
@@ -134,8 +117,8 @@ class ExerciseActivity : ComponentActivity() {
             }
 
             // put record in shared preferences if it is better
+
             if (newRecord > Exercises.getExerciseByID(exercise)!!.currentRecord) {
-                Log.d("chyck6", "${exercise}Record, im in get shared if")
                 when (exercise) {
                     "squat" -> {
                         getSharedPreferences("ExerciseRecords", MODE_PRIVATE).edit().apply {

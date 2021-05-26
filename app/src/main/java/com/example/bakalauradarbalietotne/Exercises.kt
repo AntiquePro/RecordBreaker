@@ -18,7 +18,6 @@ object Exercises {
     val exercisePushUp: Exercise = Exercise(
         title = "Atspiešanās",
         currentRecord = 0,
-        //currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("pushupRecord", 0),
         timeCounter = false,
         exerciseSteps = R.string.steps_pushup,
         painterID = R.drawable.image_stickman_pushups
@@ -27,7 +26,6 @@ object Exercises {
     val exerciseSquat: Exercise = Exercise(
         title = "Pietupieni",
         currentRecord = 0,
-        //currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("squatRecord", 0),
         timeCounter = false,
         exerciseSteps = R.string.steps_squats,
         painterID = R.drawable.image_stickman_squats
@@ -35,7 +33,6 @@ object Exercises {
 
     val exercisePlank: Exercise = Exercise(
         title = "Planka",
-        //currentRecord = getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("plankRecord", 0),
         currentRecord = 0,
         timeCounter = true,
         exerciseSteps = R.string.steps_plank,
