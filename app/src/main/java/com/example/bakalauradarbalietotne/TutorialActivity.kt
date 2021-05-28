@@ -127,6 +127,7 @@ class TutorialActivity : ComponentActivity() {
                                 .putExtra("exerciseID", exerciseID)
                                 .putExtra("workoutMode", workoutMode)
                         )
+                        finish()
                     }
                 }
             ) {

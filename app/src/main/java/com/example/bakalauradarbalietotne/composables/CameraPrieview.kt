@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import com.example.bakalauradarbalietotne.DigitalSkeleton
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.pose.PoseDetection
+import com.google.mlkit.vision.pose.PoseLandmark
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions
 
 @SuppressLint("UnsafeOptInUsageError")
@@ -64,6 +65,9 @@ fun CameraPreview() {
                         .addOnSuccessListener { pose ->
                             image.close()
                             DigitalSkeleton.currentPose = pose
+
+                            Log.d("poswa", "left shoulder Z: ${pose?.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position3D?.z}")
+                            Log.d("poswa", "right shoulder Z: ${pose?.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.position3D?.z}")
 /*                            Log.d(
                                 "ImageInfo",
                                 "Preview view width: ${previewView.width}, preview view height: ${previewView.height}"

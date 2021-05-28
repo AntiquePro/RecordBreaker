@@ -1,10 +1,15 @@
 package com.example.bakalauradarbalietotne
 
+import android.app.Activity
+import android.app.PendingIntent.getActivity
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.util.Size
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -16,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,87 +46,106 @@ class ExerciseActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val exercise = intent.getStringExtra("exerciseID")
+
+        val exerciseID = intent.getStringExtra("exerciseID")
         val workoutMode = intent.getIntExtra("workoutMode", 0)
-        var userReady = false
+
+        val exercise = Exercises.getExerciseByID(exerciseID!!)
+
         lifecycleScope.launch {
             setContent {
                 CameraPreview()
-                Text("${DigitalSkeleton.currentPose}")
                 DigitalSkeleton.currentPose?.let { currentPose ->
                     DigitalSkeleton().DrawDigitalSkeleton(currentPose)
                 }
-                ExerciseInterface(workoutMode, exercise!!)
+                ExerciseInterface(workoutMode, exerciseID)
             }
-            if (exercise == "pushup" || exercise == "plank") {
+            if (exerciseID == "pushup" || exerciseID == "plank") {
                 delay(100)
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             }
 
-            //delay(3000L)
+            delay(2000L)
             tts = TextToSpeech(applicationContext, null)
-            val workout = Workout(exercise!!, workoutMode, applicationContext, tts)
-            //var userIsOnScreen = true
-            var startingPositionGood = false
+            val workout = Workout(exerciseID, workoutMode, applicationContext, tts)
+
+            // set current set to 0
+            if (workoutMode == 2) workoutInterface.currentSet = 0
+
             var doingReps = false
             var setFinished = false
             var newRecord = 0
             workoutInterface.workoutProcess = true
+
+/*            workout.ttsSpeak(
+                "Please position your body perpendicular to the camera with your left side for better analysis!" +
+                        "Get in the correct starting position and after signal start performing exercise!"
+            )
+            delay(10000)*/
+
             // asynchronous time counter function if exercise is time based
-            if (!Exercises.getExerciseByID(exercise)!!.timeCounter) this.async { workoutInterface.countTime() }
+            if (!exercise!!.timeCounter)
+                this.async { workoutInterface.countTime() }
 
             this.async { userOnScreenAsync(workout) }
             while (workoutInterface.workoutProcess) {
-                // userIsOnScreen = true
-                Log.d("chyck", "im in workout process while loop before delay")
                 delay(100)
-                Log.d("chyck", "im in workout process while loop after delay")
-                //workout.ttsSpeak("Please, get in the $exercise starting position!")
                 while (workoutInterface.userOnScreen && workoutInterface.workoutProcess) {
-                    Log.d("chyck", "im in userIsOnScreen while loop before delay")
-                    if (!doingReps) delay(3000)
-                    else delay(1000)
-                    Log.d("chyck", "im in userIsOnScreen while loop after delay")
-                    // if user is not on screen -> break this loop
-                    //userIsOnScreen = workout.checkIfUserIsOnScreen()
-                    //if (!workoutInterface.userOnScreen) break
-                    var startingPose = workout.checkStartingPosition(this)
-                    Log.d("chyck", "startingPose: $startingPose")
-                    if (startingPose != null) {
+                    if (!doingReps) delay(3000) else delay(1000)
+                    val startingPose = workout.checkStartingPosition(this)
+                    if (startingPose != null && workoutInterface.workoutProcess) {
+                        setFinished = false
                         doingReps = true
-                        val workoutProgram = getWorkoutProgram(exercise)
-                        while (!setFinished) {
+                        val workoutProgram = getWorkoutProgram(exerciseID)
+                        while (!setFinished && workoutInterface.workoutProcess) {
                             delay(100)
-                            Log.d("chyck", "im in starting pose letsggo")
-                            // start timer? i guess if exercise is not plank??
                             workout.startExercise(startingPose, this).await()
-                            //doingReps = true
-                            if (workoutMode == 2 && workoutInterface.repsDone >= workoutProgram[workoutInterface.currentSet]) {
+                            if (workoutMode == 2 && ((!exercise.timeCounter && workoutInterface.repsDone >= workoutProgram[workoutInterface.currentSet]) || exercise.timeCounter)) {
                                 workoutInterface.repsDone = 0
                                 workoutInterface.currentSet++
-                                workout.ttsSpeak("Set done, you have 1 minute to rest!")
-                                delay(10000L)
-                                workout.ttsSpeak("You can continue!")
-                                delay(1000L)
-                                setFinished = true
+                                if (workoutInterface.currentSet < 4) {
+                                    workout.ttsSpeak("Set done, you have 1 minute to rest!")
+                                    for (i in 1..60) {
+                                        if (workoutInterface.workoutProcess)
+                                            delay(1000)
+                                        else {
+                                            workout.ttsSpeak("Workout canceled!")
+                                            delay(2000)
+                                            finish()
+                                        }
+                                    }
+                                    workout.ttsSpeak("You can continue!")
+                                    delay(1000L)
+                                    setFinished = true
+                                    doingReps = false
+                                } else {
+                                    workout.ttsSpeak("Workout finished! Good job!")
+                                    delay(2000)
+                                    finish()
+                                }
                             }
-
-                            if (workoutMode == 1) {
-                                newRecord = 5
-                                setFinished = true
-                                workoutInterface.workoutProcess = false
-                            }
-                            delay(100)
                         }
+                        delay(100)
                     }
                 }
             }
 
-            // put record in shared preferences if it is better
+            if (workoutMode == 1 && !exercise.timeCounter && workoutInterface.repsDone > exercise.currentRecord)
+                newRecord = workoutInterface.repsDone
 
-            if (newRecord > Exercises.getExerciseByID(exercise)!!.currentRecord) {
-                when (exercise) {
+            if (workoutMode == 1 && exercise.timeCounter && workoutInterface.timeCounter > exercise.currentRecord)
+                newRecord = workoutInterface.timeCounter
+
+            // put record in shared preferences if it is better
+            if (newRecord > exercise.currentRecord) {
+                workout.ttsSpeak("Congratulations! You have beaten your $exerciseID record!")
+                when (exerciseID) {
                     "squat" -> {
+                        Toast.makeText(
+                            applicationContext,
+                            "Congratulations! You have set new squat record $newRecord!",
+                            Toast.LENGTH_LONG
+                        ).show()
                         getSharedPreferences("ExerciseRecords", MODE_PRIVATE).edit().apply {
                             putInt("squatRecord", newRecord)
                             apply()
@@ -132,6 +157,11 @@ class ExerciseActivity : ComponentActivity() {
                             )
                     }
                     "pushup" -> {
+                        Toast.makeText(
+                            applicationContext,
+                            "Congratulations! You have set new pushup record $newRecord!",
+                            Toast.LENGTH_LONG
+                        ).show()
                         getSharedPreferences("ExerciseRecords", MODE_PRIVATE).edit().apply {
                             putInt("pushupRecord", newRecord)
                             apply()
@@ -143,6 +173,11 @@ class ExerciseActivity : ComponentActivity() {
                             )
                     }
                     "plank" -> {
+                        Toast.makeText(
+                            applicationContext,
+                            "Congratulations! You have set new plank record $newRecord sekonds!",
+                            Toast.LENGTH_LONG
+                        ).show()
                         getSharedPreferences("ExerciseRecords", MODE_PRIVATE).edit().apply {
                             putInt("plankRecord", newRecord)
                             apply()
@@ -157,7 +192,7 @@ class ExerciseActivity : ComponentActivity() {
             }
 
             setContent {
-                Text("Workouto overetto")
+                Text("Workouto overitto")
             }
         }
     }
@@ -166,68 +201,6 @@ class ExerciseActivity : ComponentActivity() {
         while (true) {
             workoutInterface.userOnScreen = workout.checkIfUserIsOnScreen()
             delay(5000)
-            //if (!workoutInterface.userOnScreen) tts.stop()
-        }
-    }
-
-    @Composable
-    fun CounterView() {
-        Box(modifier = Modifier.background(OrangeMain).fillMaxSize())
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                counterText.counter,
-                fontSize = 60.sp,
-                color = Color.White,
-                fontWeight = FontWeight.ExtraBold
-            )
-        }
-    }
-
-    fun startCounter(): Deferred<Unit> {
-        var job = lifecycleScope.async {
-            delay(1000)
-            counterText.counter = "3"
-            delay(1000)
-            counterText.counter = "2"
-            delay(1000)
-            counterText.counter = "1"
-            delay(1000)
-            counterText.counter = "STARTS"
-            delay(1000)
-            counterText.counter = ""
-        }
-        return job
-    }
-
-    object counterText {
-        var counter by mutableStateOf("")
-    }
-
-    @Composable
-    fun PrepareWorkout(onClick: () -> Unit) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = "Lūdzu, ieslēdziet skaņu un novietojiet ierīci tā, lai pilns ķermenis ietilptu kadrā treniņa laikā",
-                fontSize = 32.sp,
-                textAlign = TextAlign.Center,
-                color = Color.White,
-                fontFamily = FontFamily(Font(R.font.quicksand_semibold))
-            )
-            Button(
-                modifier = Modifier.padding(20.dp),
-                colors = ButtonDefaults.buttonColors(OrangeMain),
-                onClick = onClick
-            ) {
-                Text("SĀKT")
-            }
         }
     }
 

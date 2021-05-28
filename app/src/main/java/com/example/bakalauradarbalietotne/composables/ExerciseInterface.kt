@@ -1,5 +1,6 @@
 package com.example.bakalauradarbalietotne.composables
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -10,23 +11,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bakalauradarbalietotne.Exercises
+import com.example.bakalauradarbalietotne.MainActivity
 import com.example.bakalauradarbalietotne.R
+import com.example.bakalauradarbalietotne.TutorialActivity
 import com.example.bakalauradarbalietotne.composables.workoutInterface.currentSet
 import com.example.bakalauradarbalietotne.composables.workoutInterface.repsDone
 import com.example.bakalauradarbalietotne.composables.workoutInterface.timeCounter
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
 import kotlinx.coroutines.delay
+import java.lang.NullPointerException
 
 @Composable
 fun ExerciseInterface(mode: Int, exercise: String) {
 
     val currentExercise = Exercises.getExerciseByID(exercise)
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -105,36 +111,22 @@ fun ExerciseInterface(mode: Int, exercise: String) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.End,
         ) {
-            // Button pause
             Button(
                 modifier = Modifier.size(65.dp),
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(OrangeMain),
-                onClick = { }) {
-                Icon(
-                    painter = painterResource(R.drawable.exo_controls_pause),
-                    contentDescription = ""
-                )
-            }
-            // Button next
-            Button(
-                modifier = Modifier.size(65.dp),
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(OrangeMain),
-                onClick = { }) {
-                Icon(
-                    painter = painterResource(R.drawable.exo_controls_next),
-                    contentDescription = ""
-                )
-            }
-            // Button end
-            Button(
-                modifier = Modifier.size(65.dp),
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(OrangeMain),
-                onClick = { }) {
+                onClick = {
+                    try {
+                        workoutInterface.workoutProcess = false
+                    } catch (e: NullPointerException) {
+                        context.startActivity(
+                            Intent(context, MainActivity::class.java)
+                        )
+                    }
+
+                }) {
                 Text(text = "END")
             }
         }
@@ -211,11 +203,10 @@ object workoutInterface {
 
     var currentProgress by mutableStateOf(0)
 
-    var workoutProcess = true
+    var workoutProcess by mutableStateOf(false)
 
     var userOnScreen by mutableStateOf(false)
 
-    var infoSelected by mutableStateOf(false)
 
 
 }
