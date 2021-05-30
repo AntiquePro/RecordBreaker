@@ -6,9 +6,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
-import com.example.bakalauradarbalietotne.Exercise
-
+import com.example.bakalauradarbalietotne.Exercises
 
 @Composable
 fun ExerciseList(navController: NavController) {
@@ -17,19 +15,20 @@ fun ExerciseList(navController: NavController) {
         modifier = Modifier.verticalScroll(scrollState)
     ) {
         ExerciseCard(
-            Exercise.exerciseSquat
+            Exercises.exerciseSquat
         ) {
-            navController.navigate("exercise_info_screen")
+            navController.navigate("exercise_info_screen/squat")
         }
         ExerciseCard(
-            Exercise.exercisePushUp
+            Exercises.exercisePushUp
         ) {
-            navController.navigate("exercise_info_screen")
+            navController.navigate("exercise_info_screen/pushup")
         }
         ExerciseCard(
-            Exercise.exercisePlank
+            Exercises.exercisePlank
         ) {
-            navController.navigate("exercise_info_screen")
+            navController.navigate("exercise_info_screen/plank")
         }
     }
 }
+

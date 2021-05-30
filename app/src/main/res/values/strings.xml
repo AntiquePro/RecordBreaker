@@ -2,10 +2,25 @@
     <string name="app_name">Bakalaura darba lietotne</string>
     <string name="choose_exercise">Izvēlieties\nvingrinājumu</string>
     <string name="steps_pushup">
-        1. Novietojiet ķermeni četrrāpus, liekot rokas nedaudz platāk par pleciem\n
+        &#160;1. Novietojiet ķermeni četrrāpus, liekot rokas nedaudz platāk par pleciem\n
         2. Iztaisnojiet rokas un kājas\n
-        3. Nolaidiet ķermeni līdz krūtis nedaudz pieskaras grīdai\n
-        4. Iztaisnojiet rokas spiežot ķermeni uz augšu\n
+        3. Ieelpojot nolaidiet ķermeni līdz krūtis nedaudz pieskaras grīdai\n
+        4. Ar izelpu iztaisnojiet rokas spiežot ķermeni uz augšu\n
         5. Atkārtojiet
 </string>
+    <string name="steps_squats">
+        &#160;1. Nostājieties ar taisnu muguru, pēdas novietojiet mazliet platāk par pleciem, purngalus nedaudz izvērsiet uz āru\n
+        2. Turot taisnu muguru, pavelciet plecus atpakaļ\n
+        3. Ieelpojot saliekat kājas ceļos un laižaties lejup, līdz augšstilbi atrodas paralēli grīdai\n
+        4. Ar izelpu atgriežaties sākumstāvoklī\n
+        5. Atkārtojiet
+</string>
+    <string name="steps_plank">
+        &#160;1. Novietojiet ķermeni četrrāpus, atbalstoties uz elkoņiem\n
+        2. Ievelciet astes kaulu, sasprindziniet vēdera muskuļus, noturat ķermeni maksimāli taisni\n
+        3. Cenšaties noturēt pozīciju pēc iespējas ilgāk
+</string>
+    <string name="title_activity_exercise">ExerciseActivity</string>
+    <string name="title_activity_tutorial">TutorialActivity</string>
+
 </resources>
