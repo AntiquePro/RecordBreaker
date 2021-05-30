@@ -12,15 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bakalauradarbalietotne.Exercises
 import com.example.bakalauradarbalietotne.MainActivity
-import com.example.bakalauradarbalietotne.R
-import com.example.bakalauradarbalietotne.TutorialActivity
 import com.example.bakalauradarbalietotne.composables.workoutInterface.currentSet
 import com.example.bakalauradarbalietotne.composables.workoutInterface.repsDone
 import com.example.bakalauradarbalietotne.composables.workoutInterface.timeCounter
@@ -125,7 +122,6 @@ fun ExerciseInterface(mode: Int, exercise: String) {
                             Intent(context, MainActivity::class.java)
                         )
                     }
-
                 }) {
                 Text(text = "END")
             }
@@ -194,21 +190,11 @@ object workoutInterface {
             timeCounter++
         }
     }
-
     var timeCounter by mutableStateOf(0)
-
     var repsDone by mutableStateOf(0)
-    var repsToDo by mutableStateOf(0)
     var currentSet by mutableStateOf(0)
-
-    var currentProgress by mutableStateOf(0)
-
     var workoutProcess by mutableStateOf(false)
-
     var userOnScreen by mutableStateOf(false)
-
-
-
 }
 
 

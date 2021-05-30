@@ -1,6 +1,5 @@
 package com.example.bakalauradarbalietotne
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,7 +30,6 @@ class MainActivity : ComponentActivity() {
         Exercises.exercisePlank.currentRecord =
             getSharedPreferences("ExerciseRecords", MODE_PRIVATE).getInt("plankRecord", 0)
 
-
         setContent {
             val navController = rememberNavController()
             NavHost(
@@ -53,16 +51,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-/*
-        sharedPreferences.edit().apply {
-            putInt("squatRecord", 5)
-            putInt("pushupRecord", 25)
-            putInt("plankRecord", 0)
-            apply()
-        }*/
     }
 }
-
 
 @Composable
 fun ExerciseChoiceScreen(navController: NavController) {

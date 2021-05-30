@@ -48,7 +48,6 @@ class TutorialActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun CounterView() {
         Box(modifier = Modifier.background(OrangeMain).fillMaxSize())

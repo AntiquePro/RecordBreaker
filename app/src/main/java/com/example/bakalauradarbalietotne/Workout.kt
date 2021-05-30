@@ -2,7 +2,6 @@ package com.example.bakalauradarbalietotne
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
-import android.util.Log
 import com.example.bakalauradarbalietotne.composables.getWorkoutProgram
 import com.example.bakalauradarbalietotne.composables.workoutInterface
 import com.google.mlkit.vision.pose.Pose
@@ -20,11 +19,11 @@ class Workout(
         val pose = DigitalSkeleton.currentPose
         // if users body is not on screen
         if (!userIsOnScreen(pose)) {
-            Log.d("chyck", "im in user is on screen")
             tts.stop()
             ttsSpeak("Your body is not on screen!")
             return false
-        } else return true
+        } else
+            return true
     }
 
     private fun userIsOnScreen(pose: Pose?): Boolean {
@@ -34,8 +33,16 @@ class Workout(
         else true
     }
 
+    fun ttsSpeak(text: String) {
+        tts = TextToSpeech(context) { status ->
+            if (status != TextToSpeech.ERROR) {
+                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+            }
+        }
+    }
+
     fun startExercise(startingPose: Pose, coroutineScope: CoroutineScope): Deferred<Any> {
-        val job = coroutineScope.async {
+        return coroutineScope.async {
             when (exercise) {
                 "squat" -> countSqaut(startingPose, coroutineScope).await()
                 "pushup" -> countPushup(startingPose, coroutineScope).await()
@@ -43,15 +50,12 @@ class Workout(
                 else -> return@async
             }
         }
-        return job
     }
 
     fun countSqaut(startingPose: Pose, coroutineScope: CoroutineScope): Deferred<Any> {
         return coroutineScope.async {
             ttsSpeak("Go!")
 
-            // val startingPoseLeftShoulderLandmarkY =
-            // startingPose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position?.y
             val startingPoseLeftKneeIndexLandmarkY =
                 startingPose.getPoseLandmark(PoseLandmark.LEFT_KNEE)?.position?.y
             val startingPoseLeftHipIndexLandmarkY =
@@ -62,7 +66,6 @@ class Workout(
                 val startTime = System.currentTimeMillis()
                 var timeElapsed = 0L
                 var repDone = false
-
                 while (timeElapsed < 10000L && !repDone && userIsOnScreen(DigitalSkeleton.currentPose)) {
                     timeElapsed = System.currentTimeMillis() - startTime
                     currentPoseHipLandmarkList.add(
@@ -79,7 +82,7 @@ class Workout(
                         ) {
                             val getUpStartTime = System.currentTimeMillis()
                             var getUpTimeElapsed = 0L
-                            while (getUpTimeElapsed < 10000L && !repDone && userIsOnScreen(
+                            while (getUpTimeElapsed < 5000L && !repDone && userIsOnScreen(
                                     DigitalSkeleton.currentPose
                                 )
                             ) {
@@ -111,12 +114,28 @@ class Workout(
                                     if (mode == 1) {
                                         delay(500)
                                         ttsSpeak("Your shoulders and ankles should be in line while getting up! Exercise over!")
-                                        delay(500)
+                                        delay(2000)
+                                        repDone = true
                                         workoutInterface.workoutProcess = false
                                         break
                                     }
                                 }
                                 delay(100)
+                            }
+                            delay(100)
+                            if (!repDone) {
+                                when (mode) {
+                                    1 -> {
+                                        ttsSpeak("You are doing it too slow! Workout is over! You did ${workoutInterface.repsDone} reps!")
+                                        delay(5000)
+                                        workoutInterface.workoutProcess = false
+                                        break
+                                    }
+                                    2 -> {
+                                        ttsSpeak("You are doing it too slow! Try to do $exercise in 5 second time diapason!")
+                                        delay(3000)
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -130,49 +149,44 @@ class Workout(
                         if (mode == 1) {
                             delay(500)
                             ttsSpeak("Your shoulders and ankles should be in line while getting down! Exercise over!")
-                            delay(500)
+                            delay(2000)
+                            repDone = true
                             workoutInterface.workoutProcess = false
                             break
                         }
                     }
                     delay(100)
                 }
-                // delay kas rada pauzi, lai nebutu loop (bija 3sec)
                 delay(100)
-            }
-/*                if (!repDone) {
+                if (!repDone) {
                     when (mode) {
                         1 -> {
-                            ttsSpeak("Workout is over! You did ${workoutInterface.repsDone} reps!")
+                            ttsSpeak("You are doing it too slow! Workout is over! You did ${workoutInterface.repsDone} reps!")
+                            delay(5000)
                             workoutInterface.workoutProcess = false
                         }
-                        2 -> ttsSpeak("You are doing it too slow! Try to do pushup in 5 second time diapason!")
+                        2 -> {
+                            ttsSpeak("You are doing it too slow! Try to do $exercise in 5 second time diapason!")
+                            delay(3000)
+                        }
                     }
-                }*/
+                }
+            }
         }
     }
 
     fun countPushup(startingPose: Pose, coroutineScope: CoroutineScope): Deferred<Any> {
         return coroutineScope.async {
             ttsSpeak("Go!")
-            Log.d("zoza", "im in started pushup wtf ")
-
             val startingPoseLeftShoulderLandmarkY =
                 startingPose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position?.y
             val startingPoseLeftFootIndexLandmarkY =
                 startingPose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX)?.position?.y
             val currentPoseShoulderLandmarkList = mutableListOf<Float?>()
-
-            Log.d(
-                "zoza",
-                "startingShoudler: $startingPoseLeftShoulderLandmarkY ,startingFoot: $startingPoseLeftFootIndexLandmarkY "
-            )
-
             if (startingPoseLeftFootIndexLandmarkY != null && startingPoseLeftShoulderLandmarkY != null) {
                 val startTime = System.currentTimeMillis()
                 var timeElapsed = 0L
                 var repDone = false
-
                 while (timeElapsed < 10000L && !repDone && userIsOnScreen(DigitalSkeleton.currentPose)) {
                     timeElapsed = System.currentTimeMillis() - startTime
                     currentPoseShoulderLandmarkList.add(
@@ -180,29 +194,17 @@ class Workout(
                             PoseLandmark.LEFT_SHOULDER
                         )?.position?.y
                     )
-                    Log.d(
-                        "zoza",
-                        "CurrentPoseShoulderIn1While: ${currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]}"
-                    )
                     // check if form is right while doing pushup
                     if (checkIfBodyIsInStraightLine(DigitalSkeleton.currentPose)) {
                         // if user is on screen, shoulder landmark is seen and user touches the ground with chest
                         if (currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1] != null &&
-                            currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]!! >= startingPoseLeftFootIndexLandmarkY - 50F &&
+                            currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]!! >=
+                            startingPoseLeftFootIndexLandmarkY - 50F &&
                             userIsOnScreen(DigitalSkeleton.currentPose)
                         ) {
-                            Log.d(
-                                "zoza",
-                                "CurrentPoseShoulderAfter1IF: ${currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]}"
-                            )
-/*                    if (DigitalSkeleton.currentPose?.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position?.y != null
-                        && DigitalSkeleton.currentPose?.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position?.y!! <= startingPoseLeftShoulderLandmarkY + 10F
-                        && userIsOnScreen(DigitalSkeleton.currentPose)
-                    ) {*/
-
                             val getUpStartTime = System.currentTimeMillis()
                             var getUpTimeElapsed = 0L
-                            while (getUpTimeElapsed < 10000L && !repDone && userIsOnScreen(
+                            while (getUpTimeElapsed < 5000L && !repDone && userIsOnScreen(
                                     DigitalSkeleton.currentPose
                                 )
                             ) {
@@ -212,26 +214,12 @@ class Workout(
                                         PoseLandmark.LEFT_SHOULDER
                                     )?.position?.y
                                 )
-                                Log.d(
-                                    "zoza",
-                                    "CurrentPoseShoulderIn2While: ${currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]}"
-                                )
-
                                 if (checkIfBodyIsInStraightLine(DigitalSkeleton.currentPose)) {
-
                                     if (currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1] != null &&
-                                        currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]!! <= startingPoseLeftShoulderLandmarkY + 10F &&
+                                        currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]!! <=
+                                        startingPoseLeftShoulderLandmarkY + 10F &&
                                         userIsOnScreen(DigitalSkeleton.currentPose)
                                     ) {
-                                        /*if (DigitalSkeleton.currentPose?.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position?.y != null
-                                    && DigitalSkeleton.currentPose?.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position?.y!! <= startingPoseLeftShoulderLandmarkY + 10F
-                                    && userIsOnScreen(DigitalSkeleton.currentPose)
-                                ) {*/
-                                        Log.d(
-                                            "zoza",
-                                            "CurrentPoseShoulderAfter2IF: ${currentPoseShoulderLandmarkList[currentPoseShoulderLandmarkList.size - 1]}"
-                                        )
-
                                         workoutInterface.repsDone++
                                         ttsSpeak("${workoutInterface.repsDone}")
                                         repDone = true
@@ -247,12 +235,28 @@ class Workout(
                                     if (mode == 1) {
                                         delay(500)
                                         ttsSpeak("Your back is not straight while getting up! Exercise over!")
-                                        delay(500)
+                                        delay(2000)
+                                        repDone = true
                                         workoutInterface.workoutProcess = false
                                         break
                                     }
                                 }
                                 delay(100)
+                            }
+                            delay(100)
+                            if (!repDone) {
+                                when (mode) {
+                                    1 -> {
+                                        ttsSpeak("You are doing it too slow! Workout is over! You did ${workoutInterface.repsDone} reps!")
+                                        delay(5000)
+                                        workoutInterface.workoutProcess = false
+                                        break
+                                    }
+                                    2 -> {
+                                        ttsSpeak("You are doing it too slow! Try to do $exercise in 5 second time diapason!")
+                                        delay(3000)
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -266,25 +270,30 @@ class Workout(
                         if (mode == 1) {
                             delay(500)
                             ttsSpeak("Your back is not straight while going down! Exercise over!")
-                            delay(500)
+                            delay(2000)
+                            repDone = true
                             workoutInterface.workoutProcess = false
                             break
                         }
                     }
                     delay(100)
                 }
-                // delay kas rada pauzi, lai nebutu loop (bija 3sec)
                 delay(100)
-            }
-/*                if (!repDone) {
+                if (!repDone) {
                     when (mode) {
                         1 -> {
-                            ttsSpeak("Workout is over! You did ${workoutInterface.repsDone} reps!")
+                            ttsSpeak("You are doing it too slow! Workout is over! You did ${workoutInterface.repsDone} reps!")
+                            delay(5000)
                             workoutInterface.workoutProcess = false
                         }
-                        2 -> ttsSpeak("You are doing it too slow! Try to do pushup in 5 second time diapason!")
+                        2 -> {
+                            ttsSpeak("You are doing it too slow! Try to do $exercise in 5 second time diapason!")
+                            delay(3000)
+                        }
                     }
-                }*/
+                }
+            }
+
         }
     }
 
@@ -322,9 +331,6 @@ class Workout(
     }
 
     fun checkStartingPosition(coroutineScope: CoroutineScope): Pose? {
-        //coroutineScope.launch {
-        //ttsSpeak("Please get in the $exercise starting position")
-        //delay(2000)
         when (exercise) {
             "squat" -> {
                 return if (checkSquatStartingForm()) {
@@ -333,33 +339,16 @@ class Workout(
                 } else null
             }
             "pushup" -> {
-                // if form is good
                 return if (checkPushupStartingForm()) {
-                    Log.d("chyck", "im in checking pushup form = true")
                     ttsSpeak("$exercise form is good! You are ready to start!")
                     DigitalSkeleton.currentPose
-
-                } else {
-                    Log.d("chyck", "im in checking pushup form = false")
-                    null
-                }
-
-
+                } else null
             }
             "plank" -> {
-                // if form is good
-                if (checkPlankStartingForm()) {
-                    Log.d("chyck", "im in checking plank form = true")
+                return if (checkPlankStartingForm()) {
                     ttsSpeak("$exercise form is good! You are ready to start!")
-                    return DigitalSkeleton.currentPose
-
-                } else {
-                    Log.d("chyck", "im in checking plank form = false")
-                    //ttsSpeak("Your body is not in straight line")
-                    return null
-                }
-
-                // }
+                    DigitalSkeleton.currentPose
+                } else null
             }
         }
         return null
@@ -367,11 +356,11 @@ class Workout(
 
     fun checkSquatStartingForm(): Boolean {
         DigitalSkeleton.currentPose.let {
-            if (checkIfBodyIsInStraightLine(it)) {
+            if (checkIfShouldersParalelToAnkles(it)) {
                 return true
             } else {
                 when {
-                    !checkIfBodyIsInStraightLine(it) -> {
+                    !checkIfShouldersParalelToAnkles(it) -> {
                         ttsSpeak("Your body is not in a straight line!")
                         return false
                     }
@@ -384,23 +373,18 @@ class Workout(
     fun checkPushupStartingForm(): Boolean {
         DigitalSkeleton.currentPose.let {
             if (checkIfBodyIsInStraightLine(it) && checkIfElbowsUnderShoulders(it)) {
-                Log.d("chyck2", "form is good, returning true")
                 return true
             } else {
-                Log.d("chyck2", "form is not good, going in when")
                 when {
                     !checkIfBodyIsInStraightLine(it) -> {
                         ttsSpeak("Your body is not in a straight line!")
-                        Log.d("chyck2", "back fuckup")
                         return false
                     }
                     !checkIfElbowsUnderShoulders(it) -> {
                         ttsSpeak("Your elbows are not under your shoulders!")
-                        Log.d("chyck2", "elbows fuckup")
                         return false
                     }
                 }
-                Log.d("chyck2", "ready to return false")
                 return false
             }
         }
@@ -453,21 +437,6 @@ class Workout(
             leftShoulderLandmarkZ != null &&
             rightShoulderLandmarkZ != null
         ) {
-            Log.d(
-                "checkSquatForm",
-                "LEFT: ${leftShoulderLandmarkX in leftAnkleLandmarkX - 30f..leftAnkleLandmarkX + 30f} " +
-                        "${rightShoulderLandmarkX in rightAnkleLandmarkX - 30f..rightAnkleLandmarkX + 30f}"
-            )
-
-            Log.d(
-                "checkSquatForm",
-                "leftShoulderX: $leftShoulderLandmarkX, leftAnkleX: $leftAnkleLandmarkX"
-            )
-            Log.d(
-                "checkSquatForm",
-                "rightShoulderX: $rightShoulderLandmarkX, rightAnkleX: $rightAnkleLandmarkX"
-            )
-
             // if user is rotated with left side = check left landmarks, else check right landmarks
             if (leftShoulderLandmarkZ < rightShoulderLandmarkZ)
                 return (leftShoulderLandmarkX in leftAnkleLandmarkX - 30f..leftAnkleLandmarkX + 30f)
@@ -498,24 +467,12 @@ class Workout(
             leftShoulderLandmarkZ != null &&
             rightShoulderLandmarkZ != null
         ) {
-            Log.d(
-                "chyck4",
-                "leftElbowLandmarkX: $leftElbowLandmarkX, leftWristLandmarkX: $leftWristLandmarkX " +
-                        "${leftWristLandmarkX > leftElbowLandmarkX + 10f}"
-            )
-            Log.d(
-                "chyck4",
-                "rElbowLandmarkX: $rightElbowLandmarkX, rWristLandmarkX: $rightWristLandmarkX " +
-                        "${rightWristLandmarkX < rightElbowLandmarkX - 10f}"
-            )
             // if user is rotated with his left side to the camera
             if (leftShoulderLandmarkZ < rightShoulderLandmarkZ) {
-                Log.d("chyck4", "im with left side")
                 return (leftWristLandmarkX < leftElbowLandmarkX - 30f)
             }
             // if user is rotated with his right side to the camera
             else {
-                Log.d("chyck4", "im with right side")
                 return (rightWristLandmarkX > rightElbowLandmarkX + 30f)
             }
         } else {
@@ -531,33 +488,23 @@ class Workout(
         val rightShoulderLandmarkX =
             pose?.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.position?.x
         val rightElbowLandmarkX = pose?.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.position?.x
-
+        val leftShoulderLandmarkZ = pose?.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.position3D?.z
+        val rightShoulderLandmarkZ =
+            pose?.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.position3D?.z
         // check if all the needed landmarks are on screen
         if (
             leftShoulderLandmarkX != null &&
             leftElbowLandmarkX != null &&
             rightShoulderLandmarkX != null &&
-            rightElbowLandmarkX != null
+            rightElbowLandmarkX != null &&
+            leftShoulderLandmarkZ != null &&
+            rightShoulderLandmarkZ != null
         ) {
-            Log.d(
-                "zoza",
-                "checking left elbow state: elbowX: $leftElbowLandmarkX, shoulderX: $leftShoulderLandmarkX"
-            )
-            Log.d(
-                "zoza",
-                "checking right elbow state: elbowX: $rightElbowLandmarkX, shoulderX: $rightShoulderLandmarkX"
-            )
-
-            Log.d(
-                "zoza",
-                "elbows t/f: left ${(leftElbowLandmarkX in leftShoulderLandmarkX - 20f..leftShoulderLandmarkX + 20f)}"
-            )
-            Log.d(
-                "zoza",
-                "elbows t/f: right ${(rightElbowLandmarkX in rightShoulderLandmarkX - 20f..rightShoulderLandmarkX + 20f)}"
-            )
-            return ((leftElbowLandmarkX in leftShoulderLandmarkX - 50f..leftShoulderLandmarkX + 50f) &&
-                    (rightElbowLandmarkX in rightShoulderLandmarkX - 50f..rightShoulderLandmarkX + 50f))
+            // if user is rotated with left side = check left landmarks, else check right landmarks
+            if (leftShoulderLandmarkZ < rightShoulderLandmarkZ)
+                return leftElbowLandmarkX in leftShoulderLandmarkX - 10f..leftShoulderLandmarkX + 10f
+            else
+                return rightElbowLandmarkX in rightShoulderLandmarkX - 10f..rightShoulderLandmarkX + 10f
 
         } else {
             ttsSpeak("Some of the landmarks are not on screen")
@@ -586,50 +533,14 @@ class Workout(
             rightHipLandmarkY != null &&
             rightKneeLandmarkY != null
         ) {
-            // if both sides ankle, knee, hip and shoulder are not in line in range of 100, then spine is not straight
-            return (((leftShoulderLandmarkY + leftAnkleLandmarkY) / 2) in leftHipLandmarkY - 50f..leftHipLandmarkY + 50f) &&
-                    (((leftHipLandmarkY + leftAnkleLandmarkY) / 2) in leftKneeLandmarkY - 50f..leftKneeLandmarkY + 50f) &&
-                    (((rightShoulderLandmarkY + rightAnkleLandmarkY) / 2) in rightHipLandmarkY - 50f..rightHipLandmarkY + 50f) &&
-                    (((rightHipLandmarkY + rightAnkleLandmarkY) / 2) in rightKneeLandmarkY - 50f..rightKneeLandmarkY + 50f)
+            // if both sides ankles, knees, hips and shoulders are not in line in range of 100, then spine is not straight
+            return (((leftShoulderLandmarkY + leftAnkleLandmarkY) / 2) in leftHipLandmarkY - 30f..leftHipLandmarkY + 30f) &&
+                    (((leftHipLandmarkY + leftAnkleLandmarkY) / 2) in leftKneeLandmarkY - 30f..leftKneeLandmarkY + 30f) &&
+                    (((rightShoulderLandmarkY + rightAnkleLandmarkY) / 2) in rightHipLandmarkY - 30f..rightHipLandmarkY + 30f) &&
+                    (((rightHipLandmarkY + rightAnkleLandmarkY) / 2) in rightKneeLandmarkY - 30f..rightKneeLandmarkY + 30f)
         } else {
             ttsSpeak("Some of the landmarks are not on screen")
             return false
         }
     }
-
-    fun ttsSpeak(text: String) {
-        tts = TextToSpeech(context) { status ->
-            if (status != TextToSpeech.ERROR) {
-                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
-            }
-        }
-    }
-
-    fun ifUserIsReadySpeech() {
-        when (mode) {
-            1 -> {
-                if (exercise == "plank")
-                    ttsSpeak("You can start to perform $exercise as long as you can!")
-                else
-                    ttsSpeak("You can start to perform $exercise as many repetitions as you can!")
-            }
-            2 -> ttsSpeak("You can start to perform exercise $exercise !")
-            else -> ttsSpeak("Error selecting exercise!")
-        }
-    }
 }
-
-
-/*    fun ttsSpeak(context: Context, text: String) {
-        lateinit var mTTS3:TextToSpeech
-        mTTS3 = TextToSpeech(context) { status ->
-            if (status != TextToSpeech.ERROR) {
-                mTTS3.speak(
-                    text,
-                    TextToSpeech.QUEUE_FLUSH,
-                    null,
-                    null
-                )
-            }
-        }
-    }*/

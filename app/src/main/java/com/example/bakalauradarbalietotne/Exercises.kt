@@ -1,9 +1,5 @@
 package com.example.bakalauradarbalietotne
 
-import android.app.Application
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
-
 object Exercises {
 
     fun getExerciseByID(exerciseID: String): Exercise? {

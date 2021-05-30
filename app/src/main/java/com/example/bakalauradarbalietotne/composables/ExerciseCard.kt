@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.example.bakalauradarbalietotne.Exercise
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
 
-
 @Composable
 fun ExerciseCard(
     exercise: Exercise,

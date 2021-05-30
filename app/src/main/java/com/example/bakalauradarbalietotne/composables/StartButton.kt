@@ -19,7 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
-import com.example.bakalauradarbalietotne.ExerciseActivity
 import com.example.bakalauradarbalietotne.Exercises
 import com.example.bakalauradarbalietotne.R
 import com.example.bakalauradarbalietotne.TutorialActivity
@@ -34,7 +33,7 @@ fun FloatingStartButtons(exerciseID: String) {
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        // new record button
+        // New record button
         ExtendedFloatingActionButton(
             text = { Text("Jauns\nrekords") },
             backgroundColor = OrangeMain,
@@ -51,7 +50,7 @@ fun FloatingStartButtons(exerciseID: String) {
             }
         )
 
-        // workout button
+        // Workout button
         if (Exercises.getExerciseByID(exerciseID)?.currentRecord != 0)
         ExtendedFloatingActionButton(
             text = { Text("Veikt\ntreniņu") },

@@ -1,44 +1,17 @@
 package com.example.bakalauradarbalietotne
 
-import android.app.Activity
-import android.app.PendingIntent.getActivity
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.util.Log
-import android.util.Size
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.example.bakalauradarbalietotne.composables.CameraPreview
 import com.example.bakalauradarbalietotne.composables.ExerciseInterface
 import com.example.bakalauradarbalietotne.composables.getWorkoutProgram
 import com.example.bakalauradarbalietotne.composables.workoutInterface
-import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
 import kotlinx.coroutines.*
-import kotlin.properties.Delegates
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
-
 
 class ExerciseActivity : ComponentActivity() {
 
@@ -49,7 +22,6 @@ class ExerciseActivity : ComponentActivity() {
 
         val exerciseID = intent.getStringExtra("exerciseID")
         val workoutMode = intent.getIntExtra("workoutMode", 0)
-
         val exercise = Exercises.getExerciseByID(exerciseID!!)
 
         lifecycleScope.launch {
@@ -69,19 +41,20 @@ class ExerciseActivity : ComponentActivity() {
             tts = TextToSpeech(applicationContext, null)
             val workout = Workout(exerciseID, workoutMode, applicationContext, tts)
 
-            // set current set to 0
+            // set variables to defaults
             if (workoutMode == 2) workoutInterface.currentSet = 0
-
+            workoutInterface.timeCounter = 0
+            workoutInterface.repsDone = 0
+            workoutInterface.workoutProcess = true
             var doingReps = false
             var setFinished = false
             var newRecord = 0
-            workoutInterface.workoutProcess = true
 
-/*            workout.ttsSpeak(
-                "Please position your body perpendicular to the camera with your left side for better analysis!" +
-                        "Get in the correct starting position and after signal start performing exercise!"
+            workout.ttsSpeak(
+                "Please position your body perpendicular to the camera, " +
+                        "get in the correct starting position and start performing exercise after the signal!"
             )
-            delay(10000)*/
+            delay(10000)
 
             // asynchronous time counter function if exercise is time based
             if (!exercise!!.timeCounter)
@@ -190,10 +163,7 @@ class ExerciseActivity : ComponentActivity() {
                     }
                 }
             }
-
-            setContent {
-                Text("Workouto overitto")
-            }
+            finish()
         }
     }
 
@@ -204,83 +174,25 @@ class ExerciseActivity : ComponentActivity() {
         }
     }
 
-    // šito var pie test
     override fun onStop() {
         super.onStop()
-        // šo 100% vajag debug sadaļā!!
         if (this::tts.isInitialized) {
             if (tts.isSpeaking) {
                 tts.stop()
                 tts.shutdown()
             }
         }
-        workoutInterface.timeCounter = 0
+        workoutInterface.workoutProcess = false
     }
 
     override fun onPause() {
         super.onPause()
-        // šo 100% vajag debug sadaļā!!
         if (this::tts.isInitialized) {
             if (tts.isSpeaking) {
                 tts.stop()
                 tts.shutdown()
             }
         }
+        workoutInterface.workoutProcess = false
     }
 }
-
-
-/*setContent {
-    val composableScope = rememberCoroutineScope()
-    CameraPreview()
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier.padding(8.dp),
-            text = "Novietojiet ierīci tā, lai pilns Jūsu ķermenis ietilptu kadrā treniņa laikā",
-            fontSize = 32.sp,
-            textAlign = TextAlign.Center,
-            color = Color.White,
-            fontFamily = FontFamily(Font(R.font.quicksand_semibold))
-        )
-        Button(
-            modifier = Modifier.padding(20.dp),
-            onClick = {
-                GlobalScope.launch {
-                    setContent {
-                        CameraPreview()
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                counterText.counter,
-                                fontSize = 60.sp,
-                                color = Color.White,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                        }
-                    }
-                    StartCounter().await()
-                    setContent {
-                        CameraPreview()
-                        Text("${DigitalSkeleton.currentPose}")
-                        DigitalSkeleton.currentPose?.let { currentPose ->
-                            DigitalSkeleton().DrawDigitalSkeleton(currentPose)
-                        }
-                        ExerciseInterface()
-                    }
-                }
-            },
-            colors = ButtonDefaults.buttonColors(OrangeMain)
-        ) {
-            Text("SĀKT")
-        }
-    }
-    //}
-}*/
-
-

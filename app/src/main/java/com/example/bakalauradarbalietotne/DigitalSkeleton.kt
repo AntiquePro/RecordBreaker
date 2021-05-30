@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,10 +14,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.dp
 import com.example.bakalauradarbalietotne.ui.theme.OrangeMain
-import com.google.android.gms.internal.mlkit_vision_mediapipe.zzdw
-import com.google.mlkit.vision.mediapipe.pose.PoseHolder
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import kotlin.properties.Delegates
@@ -131,8 +127,16 @@ class DigitalSkeleton {
         ) {
             drawLine(
                 color = Color.White,
-                start = adjustCoordinates(startPoint.x, startPoint.y, checkIfDeviceIsRotated(configuration)),
-                end = adjustCoordinates(endPoint.x, endPoint.y, checkIfDeviceIsRotated(configuration)),
+                start = adjustCoordinates(
+                    startPoint.x,
+                    startPoint.y,
+                    checkIfDeviceIsRotated(configuration)
+                ),
+                end = adjustCoordinates(
+                    endPoint.x,
+                    endPoint.y,
+                    checkIfDeviceIsRotated(configuration)
+                ),
                 strokeWidth = 8f
             )
         }
@@ -173,36 +177,12 @@ class DigitalSkeleton {
         else scaleFormula(true)
     }
 
-    //-1.5f
-    //1.67f//2f
-
     private fun scaleFormula(isRotated: Boolean): Float {
         // If device is not rotated (portrait mode)
-        return if (!isRotated) (
-                currentCameraPreview.height.toFloat() / currentCameraPreview.width.toFloat()) / (ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat()
-                )
+        return if (!isRotated) (currentCameraPreview.height.toFloat() / currentCameraPreview.width.toFloat()) /
+                (ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat())
         // If device is rotated (landscape mode)
-        else (
-                currentCameraPreview.width.toFloat() / currentCameraPreview.height.toFloat()) / (ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat()
-                )
+        else (currentCameraPreview.width.toFloat() / currentCameraPreview.height.toFloat()) /
+                (ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat())
     }
-
-    // pielikt to translate coordinate funkciju arī drawLine. Tad notestēt, ar lenovo gan jau būs sveists. Bet tālāk ar to scale dabūt arī.
 }
-
-/*        Log.d(
-            "Scales",
-            "camerapreview: ${(currentCameraPreview.height / currentCameraPreview.width).toFloat()}"
-        )
-        Log.d(
-            "Scales",
-            "rotated: ${scaleFormula(true)}"
-        )
-        Log.d(
-            "Scales",
-            "note rotated: ${scaleFormula(false)}"
-        )
-        Log.d(
-            "Scales",
-            "mlkit: ${ML_KIT_IMAGE_DEFAULT_HEIGHT.toFloat() / ML_KIT_IMAGE_DEFAULT_WIDTH.toFloat()}"
-        )*/
